@@ -28,7 +28,7 @@ namespace SuperMcShifty
         Inactive                                            // Unit is not currently being used in the game
     }
 
-    public class UnitCollisionEvent : UnityEvent<Unit> { }  // Generic event used to pass unit collided with to listeners
+    public class UnitCollisionEvent : UnityEvent<Collision2D, Unit> { }  // Generic event used to pass unit collided with to listeners
 
     [RequireComponent(typeof(Collider2D))]
     [RequireComponent(typeof(SpriteRenderer))]
@@ -182,13 +182,13 @@ namespace SuperMcShifty
                 switch (collisionUnit.unitType)
                 {
                     case UnitType.Enemy:
-                        collisionEnemy.Invoke(collisionUnit);
+                        collisionEnemy.Invoke(collision, collisionUnit);
                         break;
                     case UnitType.Friendly:
-                        collisionFriendly.Invoke(collisionUnit);
+                        collisionFriendly.Invoke(collision, collisionUnit);
                         break;
                     case UnitType.Player:
-                        collisionPlayer.Invoke(collisionUnit);
+                        collisionPlayer.Invoke(collision, collisionUnit);
                         break;
                     default:
                         Debug.Log("Unit " + name + " collided with unit " + collisionUnit.name + ".  " + collisionUnit.name + " has unknown type " + collisionUnit.unitType);

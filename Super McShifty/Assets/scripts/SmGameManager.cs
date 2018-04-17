@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace SuperMcShifty
 {
-    public enum LayerMaskValues
+    public enum LayerMaskValues                 // Bit masks for each custom layer that is used in the game
     {
         Player = 256,
         Enemy = 512,
@@ -25,7 +25,8 @@ namespace SuperMcShifty
         Camera m_Camera;                        // Main camera for game
         static float screenBoundX;              // Half the width of the camera in Unity units
         static float screenBoundY;              // Half the height of the camera in Unity units
-        Player player;                          // The player in the game
+        static Player player;                   // The player in the game
+        static EnemyManager enemyManager;       // The manager for all enemies in the game
 
         public static float GetScreenBoundX()
         {
@@ -37,10 +38,16 @@ namespace SuperMcShifty
             return screenBoundY;
         }
 
-        public Player GetPlayer()
+        public static Player GetPlayer()
         {
             return player;
         }
+
+        public static EnemyManager GetEnemyManager()
+        {
+            return enemyManager;
+        }
+
 
         /********************************************************************
          * Perform Game Manager initialization first so other classes can
@@ -53,6 +60,12 @@ namespace SuperMcShifty
             screenBoundX = m_Camera.aspect * screenBoundY;
             
             player = FindObjectOfType<Player>();
+            if (player == null)
+                throw new MissingComponentException("Failed to find \"Player\".");
+
+            enemyManager = FindObjectOfType<EnemyManager>();
+            if (enemyManager == null)
+                throw new MissingComponentException("Failed to find \"EnemyManager\".");
         }
 
         // Use this for initialization

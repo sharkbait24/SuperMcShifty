@@ -12,15 +12,29 @@ namespace SuperMcShifty
 {
     public class EnemyManager : MonoBehaviour
     {
+        public int maxEnemyCount = 15;              // Maximum number of enemies on screen
+
+        static bool canSpawnEnemies;                // Flags if the game is in a state where enemy spawning is allowed
+
+        public static bool CanSpawnEnemies()
+        {
+            return canSpawnEnemies;
+        }
 
         // Use this for initialization
         void Start()
         {
-
+           
+            canSpawnEnemies = true;
         }
 
         // Update is called once per frame
         void Update()
+        {
+
+        }
+
+        public void TrackEnemy(EnemySpawner spawner, Enemy enemy)
         {
 
         }

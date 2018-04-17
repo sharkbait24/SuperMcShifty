@@ -15,6 +15,8 @@ namespace SuperMcShifty
     public class Enemy : Unit
     {
         public int damageOnContact = 1;             // Damage dealt to player on contact
+        public bool respawnOnExit = true;           // Respawn enemy on reaching an exit
+        public bool respawnOnDeath = false;         // Respawn enemy after it dies
 
         float horizontalMoveDirection;              // The current direction the enemy is heading in
 
