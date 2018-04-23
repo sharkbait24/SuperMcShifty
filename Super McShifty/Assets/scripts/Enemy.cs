@@ -9,7 +9,10 @@ using UnityEngine;
  ********************************************************************************************/
 
 namespace SuperMcShifty
-{
+{ 
+    
+
+
     [RequireComponent(typeof(UnitMover))]
 
     public class Enemy : Unit
@@ -17,15 +20,36 @@ namespace SuperMcShifty
         public int damageOnContact = 1;             // Damage dealt to player on contact
         public bool respawnOnExit = true;           // Respawn enemy on reaching an exit
         public bool respawnOnDeath = false;         // Respawn enemy after it dies
+        public float respawnOnDeathTime = 5.0f;     // Time to respawn after dying (if respawnOnDeath is true)
 
+        float timeTillDeathRespawn = 0f;            // Time left until respawn after dying
         float horizontalMoveDirection;              // The current direction the enemy is heading in
+        uint id;                                    // Unique ID for the enemy
+        Enemy defaultTemplate;                      // An instance of the prefab enemy this was instantiated from (for reseting default values)
+
+        public uint Id
+        {
+            get { return id; }
+        }
+
+        public float TimeTillDeathRespawn
+        {
+            get { return timeTillDeathRespawn; }
+        }
 
         /********************************************************************
          * Initialization of Unit base class
          ********************************************************************/
         void Start()
         {
+            Init();
+        }
+
+        public override void Init()
+        {
             base.Init();
+            unitMover.Init();
+            id = EnemyManager.GetNextEnemyId();
         }
 
         /********************************************************************
@@ -39,7 +63,13 @@ namespace SuperMcShifty
 
         protected override void UpdateDead()
         {
-            throw new System.NotImplementedException();
+            gameObject.SetActive(false);
+            SmGameManager.GetEnemyManager.EnemyDied(this);
+        }
+
+        protected override void NonUnitCollision(Collision2D collision)
+        {
+            
         }
 
         /********************************************************************
@@ -52,17 +82,27 @@ namespace SuperMcShifty
         {
             transform.position = position;
             horizontalMoveDirection = Mathf.Clamp(-1f, horizontalMove, 1f);
-            collider.enabled = true;
             state = State.Active;
+            gameObject.SetActive(true);
+            unitCollider.enabled = true;
         }
 
         /********************************************************************
-         * Move in direction already established.  This will only change if
-         * collision with another enemy unit happens.
+         * Initialize timeTillDeathRespawn
          ********************************************************************/
-        private void GroundMove()
+        public void StartRespawnCountdown()
         {
-            unitMover.Move(horizontalMoveDirection, false);
+            timeTillDeathRespawn = respawnOnDeathTime;
+        }
+
+        /********************************************************************
+         * Decrement timeTillDeathRespawn.
+         * 
+         * @param   timeSinceLastUpdate     Time since last frame update
+         ********************************************************************/
+        public void UpdateRespawnCountdown(float timeSinceLastUpdate)
+        {
+            timeTillDeathRespawn -= timeSinceLastUpdate;
         }
 
         /********************************************************************
@@ -74,11 +114,12 @@ namespace SuperMcShifty
         }
 
         /********************************************************************
-         * Change direction of movement on collision with enemy unit.
+         * Move in direction already established.  This will only change if
+         * collision with another enemy unit happens.
          ********************************************************************/
-        public void CollisionWithEnemy(Unit enemy)
+        private void GroundMove()
         {
-            horizontalMoveDirection *= -1;
+            unitMover.Move(horizontalMoveDirection, false);
         }
     }
 }

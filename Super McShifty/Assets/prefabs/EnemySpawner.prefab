@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4604571237629672}
   - component: {fileID: 212444284226839842}
+  - component: {fileID: 114883465237617458}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: EnemySpawner
@@ -40,6 +41,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114883465237617458
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1924408024061900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de184f3326fa4ae45acc3ac5604d9e38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstEnemyTime: 2
+  spawnTime: 3
+  newEnemyTime: 10
+  moveDirectionOnSpawn: 0
+  chanceReverseDirection: 0
+  spawnPoolCreator: []
 --- !u!212 &212444284226839842
 SpriteRenderer:
   m_ObjectHideFlags: 1

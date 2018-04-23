@@ -18,20 +18,33 @@ namespace SuperMcShifty
     public class UnitMover : MonoBehaviour
     {
         [SerializeField] float runSpeed = 5f;               // Horizontal velocity applied on Move
-        [SerializeField] float jumpVelocity = 12f;          // Vertical velocity applied on jump
+        [SerializeField] float jumpPower = 12f;             // Vertical velocity applied on jump
         [SerializeField] float groundCheckDistance = 0.5f;  // Distance below box collider that raycast checks for environment
 
         bool isGrounded;                                    // Flag if player is on the ground
         Rigidbody2D rb;                                     // Rigidbody on object
         BoxCollider2D boxCollider;                          // Collider on this object
 
+        static ScreenBounds screenBounds;                   // Holds the screen bounds info for the game
+
+        public bool IsGrounded
+        {
+            get { return isGrounded; }     
+        }
+
+        void Start()
+        {
+            Init();
+        }
+
         /********************************************************************
          * Initialization and initial ground check since unit may start in the air.
          ********************************************************************/
-        void Start()
+        public void Init()
         {
             rb = GetComponent<Rigidbody2D>();
             boxCollider = GetComponent<BoxCollider2D>();
+            screenBounds = SmGameManager.GetScreenBounds;
             CheckGround();
         }
 
@@ -45,12 +58,12 @@ namespace SuperMcShifty
          ********************************************************************/
         public void Move(float horizontal, bool jump)
         {
-            if (!SmGameManager.IsInCameraFrame(transform.position))
-                transform.position = SmGameManager.PositionAfterWrapAround(transform.position);
+            if (!screenBounds.IsInCameraFrame(transform.position))
+                transform.position = screenBounds.PositionAfterWrapAround(transform.position);
             CheckGround();
             if (jump && isGrounded)
             {
-                rb.velocity = new Vector2(horizontal * runSpeed, jumpVelocity);
+                rb.velocity = new Vector2(horizontal * runSpeed, jumpPower);
             }
             else
             {

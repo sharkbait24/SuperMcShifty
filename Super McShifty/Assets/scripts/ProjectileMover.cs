@@ -28,6 +28,8 @@ namespace SuperMcShifty
         bool isMoving;                                      // Flag for if the object is currently moving
         float distanceTravelled;                            // Distance travelled in current move
 
+        static ScreenBounds screenBounds;                   // Holds bounds for game
+
 
         /********************************************************************
          * Initialization
@@ -35,6 +37,7 @@ namespace SuperMcShifty
         void Start()
         {
             distanceTravelled = 0.0f;
+            screenBounds = SmGameManager.GetScreenBounds;
         }
 
         /********************************************************************
@@ -47,7 +50,7 @@ namespace SuperMcShifty
             {
                 transform.position = transform.position + moveVector;
                 distanceTravelled += moveVector.magnitude;
-                if (distanceTravelled > distanceLimit || !SmGameManager.IsInCameraFrame(transform.position))
+                if (distanceTravelled > distanceLimit || !screenBounds.IsInCameraFrame(transform.position))
                 {
                     Stop();
                 }

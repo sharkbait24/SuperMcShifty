@@ -23,29 +23,23 @@ namespace SuperMcShifty
     public class SmGameManager : MonoBehaviour
     {
         Camera m_Camera;                        // Main camera for game
-        static float screenBoundX;              // Half the width of the camera in Unity units
-        static float screenBoundY;              // Half the height of the camera in Unity units
+        static ScreenBounds screenBounds;       // Contains game's screen bounds based on camera position and settings
         static Player player;                   // The player in the game
         static EnemyManager enemyManager;       // The manager for all enemies in the game
 
-        public static float GetScreenBoundX()
+        public static ScreenBounds GetScreenBounds
         {
-            return screenBoundX;
+            get { return screenBounds; }
         }
 
-        public static float GetScreenBoundY()
+        public static Player GetPlayer
         {
-            return screenBoundY;
+            get { return player; }
         }
 
-        public static Player GetPlayer()
+        public static EnemyManager GetEnemyManager
         {
-            return player;
-        }
-
-        public static EnemyManager GetEnemyManager()
-        {
-            return enemyManager;
+            get { return enemyManager; }
         }
 
 
@@ -56,8 +50,7 @@ namespace SuperMcShifty
         void Awake()
         {
             m_Camera = Camera.main;
-            screenBoundY = m_Camera.orthographicSize;
-            screenBoundX = m_Camera.aspect * screenBoundY;
+            screenBounds = new ScreenBounds(m_Camera);
             
             player = FindObjectOfType<Player>();
             if (player == null)
@@ -66,54 +59,17 @@ namespace SuperMcShifty
             enemyManager = FindObjectOfType<EnemyManager>();
             if (enemyManager == null)
                 throw new MissingComponentException("Failed to find \"EnemyManager\".");
-        }
 
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            Physics2D.IgnoreLayerCollision(9, 9, true);  // Disable collisions between enemies
         }
 
         /********************************************************************
-         * Returns if the position is within the camera frame
+         * Called after update, so that all units and camera have finished moving
+         * before we potentially change the screen bounds.
          ********************************************************************/
-        public static bool IsInCameraFrame(Vector3 position)
+        void LateUpdate()
         {
-            if (position.x > screenBoundX || position.x < -screenBoundX ||
-                position.y > screenBoundY || position.y < -screenBoundY)
-                return false;
-            return true;
-        }
-
-        /********************************************************************
-         * Takes the current position and returns the position after wrap around
-         * is applied.  i.e. If they go off the left side of the screen, make
-         * them appear on the right at the same height.
-         * 
-         * @param   currentPosition     Current position of object
-         * @return                      A new position with the wrap around applied
-         ********************************************************************/
-        public static Vector3 PositionAfterWrapAround(Vector3 currentPosition)
-        {
-            Vector3 newPosition = currentPosition;
-
-            if (currentPosition.x < -screenBoundX)
-                newPosition.x = screenBoundX + (currentPosition.x + screenBoundX);
-            else if (currentPosition.x > screenBoundX)
-                newPosition.x = -screenBoundX + (currentPosition.x - screenBoundX);
-
-            if (currentPosition.y < -screenBoundY)
-                newPosition.y = screenBoundY + (currentPosition.y + screenBoundY);
-            else if (currentPosition.y > screenBoundY)
-                newPosition.y = -screenBoundY + (currentPosition.y - screenBoundY);
-
-            return newPosition;
+            screenBounds.CheckBounds();
         }
     }
 }

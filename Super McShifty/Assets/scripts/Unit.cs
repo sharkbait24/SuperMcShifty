@@ -28,6 +28,7 @@ namespace SuperMcShifty
         Inactive                                            // Unit is not currently being used in the game
     }
 
+    [System.Serializable]
     public class UnitCollisionEvent : UnityEvent<Collision2D, Unit> { }  // Generic event used to pass unit collided with to listeners
 
     [RequireComponent(typeof(Collider2D))]
@@ -46,17 +47,17 @@ namespace SuperMcShifty
 
         protected float deathAnimationElapsedTime;          // Amount of time spent in the animation
         protected UnitMover unitMover;                      // Optional mover component to move game object
-        protected new Collider2D collider;                  // Collider on this object
+        protected Collider2D unitCollider;                  // Collider on this object
         SpriteRenderer spriteRenderer;                      // Sprite renderer on this object
 
 
         /********************************************************************
          * Initialization
          ********************************************************************/
-        protected void Init()
+        public virtual void Init()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
-            collider = GetComponent<Collider2D>();
+            unitCollider = GetComponent<Collider2D>();
             unitMover = GetComponent<UnitMover>();
             deathAnimationElapsedTime = 0.0f;
         }
@@ -82,7 +83,7 @@ namespace SuperMcShifty
                     UpdateInactive();
                     break;
                 default:
-                    Debug.Log("Unit \"" + name + "\" in unkown State (" + state + ")");
+                    Debug.Log("Unit in unkown State (" + state + ")", this);
                     break;
             }
         }
@@ -135,7 +136,7 @@ namespace SuperMcShifty
             if (state == State.Active)
             {
                 state = State.Dying;
-                collider.enabled = false;
+                unitCollider.enabled = false;
             }
         }
 
@@ -195,6 +196,16 @@ namespace SuperMcShifty
                         break;
                 }
             }
+            else
+                NonUnitCollision(collision);
         }
+
+        /********************************************************************
+         * The collision was not with a unit, but derived classes may want to
+         * check it.
+         * 
+         * @param   collision       The object collided with
+         ********************************************************************/
+        protected virtual void NonUnitCollision(Collision2D collision) { }
     }
 }
