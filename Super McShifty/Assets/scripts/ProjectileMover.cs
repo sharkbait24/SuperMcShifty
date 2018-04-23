@@ -19,14 +19,16 @@ namespace SuperMcShifty
 
     public class ProjectileMover : MonoBehaviour
     {
-        public List<UnitType> ignoreUnitType;               // All units types this will pass through
+        public List<UnitType> ignoreUnitType;               // All units types the projectile will pass through
         public bool ignoreEnvironment;                      // If projectile can pass through the environment
         public float distanceLimit;                         // Maximum distance the object can move before stopping
         public UnityEvent projectileStopped;                // Event that fires everytime this object stops moving
 
         Vector3 moveVector;                                 // Direction and magnitude of movement
         bool isMoving;                                      // Flag for if the object is currently moving
-        float distanceTravelled;                            // Distance travelled so far
+        float distanceTravelled;                            // Distance travelled in current move
+
+        static ScreenBounds screenBounds;                   // Holds bounds for game
 
 
         /********************************************************************
@@ -35,6 +37,7 @@ namespace SuperMcShifty
         void Start()
         {
             distanceTravelled = 0.0f;
+            screenBounds = SmGameManager.GetScreenBounds;
         }
 
         /********************************************************************
@@ -47,10 +50,9 @@ namespace SuperMcShifty
             {
                 transform.position = transform.position + moveVector;
                 distanceTravelled += moveVector.magnitude;
-                if (distanceTravelled > distanceLimit || !SmGameManager.IsInCameraFrame(transform.position))
+                if (distanceTravelled > distanceLimit || !screenBounds.IsInCameraFrame(transform.position))
                 {
                     Stop();
-                    return;
                 }
             }
         }

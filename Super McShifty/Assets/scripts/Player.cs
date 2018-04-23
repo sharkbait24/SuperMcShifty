@@ -15,11 +15,17 @@ namespace SuperMcShifty
     public class Player : Unit
     {
         SmGameManager gameManager;
+        Player defaultTemplate;                               // An instance of the prefab player this was instantiated from (for reseting default values)
 
         /********************************************************************
          * Initialization of Player and base class Unit
          ********************************************************************/
         void Start()
+        {
+            Init();
+        }
+
+        public override void Init()
         {
             base.Init();
             gameManager = FindObjectOfType<SmGameManager>();
@@ -39,6 +45,11 @@ namespace SuperMcShifty
         protected override void UpdateDead()
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override void NonUnitCollision(Collision2D collision)
+        {
+            
         }
     }
 }
